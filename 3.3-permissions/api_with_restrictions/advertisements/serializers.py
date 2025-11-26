@@ -1,7 +1,9 @@
 from django.contrib.auth.models import User
+from django.http import Http404
 from rest_framework import serializers
 
 from advertisements.models import Advertisement
+from rest_framework.status import HTTP_502_BAD_GATEWAY
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -34,6 +36,7 @@ class AdvertisementSerializer(serializers.ModelSerializer):
         # обратите внимание на `context` – он выставляется автоматически
         # через методы ViewSet.
         # само поле при этом объявляется как `read_only=True`
+        #print(f"see our data:{validated_data}")
         validated_data["creator"] = self.context["request"].user
         return super().create(validated_data)
 
@@ -41,5 +44,7 @@ class AdvertisementSerializer(serializers.ModelSerializer):
         """Метод для валидации. Вызывается при создании и обновлении."""
 
         # TODO: добавьте требуемую валидацию
-
+        cur_user = Advertisement.objects.filter(creator=self.context["request"].user)
+        if cur_user.filter(status__icontains='OPEN').count() >= 10:
+            raise Http404
         return data
