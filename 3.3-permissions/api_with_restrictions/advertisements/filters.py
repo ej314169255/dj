@@ -8,8 +8,8 @@ class AdvertisementFilter(django_filters.FilterSet):
 
     # TODO: задайте требуемые фильтры
     created_at = django_filters.DateFromToRangeFilter(field_name='created_at')
-    status = django_filters.CharFilter(lookup_expr='icontains')
-    creator = django_filters.CharFilter()
+    status = django_filters.CharFilter()
+    creator = django_filters.NumberFilter()
 
     class Meta:
         model = Advertisement

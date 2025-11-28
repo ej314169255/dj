@@ -1,10 +1,7 @@
 from django.contrib.auth.models import User
-from django.http import Http404
 from rest_framework import serializers
-
+from rest_framework.exceptions import ValidationError
 from advertisements.models import Advertisement
-from rest_framework.status import HTTP_502_BAD_GATEWAY
-
 
 class UserSerializer(serializers.ModelSerializer):
     """Serializer для пользователя."""
@@ -46,5 +43,5 @@ class AdvertisementSerializer(serializers.ModelSerializer):
         # TODO: добавьте требуемую валидацию
         cur_user = Advertisement.objects.filter(creator=self.context["request"].user)
         if cur_user.filter(status__icontains='OPEN').count() >= 10:
-            raise Http404
+            raise ValidationError ('Слишком много записей типа OPEN')
         return data
